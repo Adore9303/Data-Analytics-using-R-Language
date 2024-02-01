@@ -1,0 +1,41 @@
+
+library(ggplot2)
+library(dplyr)
+
+ipl_data <- read.csv(file = "C:/Users/hp/OneDrive/Desktop/data.csv")
+
+# Task 1: Data Overview and Structure
+str(ipl_data)
+summary(ipl_data)
+
+# Task 2: Basic Data Insights
+total_matches <- nrow(ipl_data)
+unique_teams <- unique(c(ipl_data$team1, ipl_data$team2))
+cat("\n\n")
+cat("Total number of matches:", total_matches, "\n")
+cat("Number of unique teams:", length(unique_teams), "\n")
+cat("Unique teams:\n")
+for(team in unique_teams)
+{
+  cat(team,"\n")
+}
+cat("\n")
+
+# Task 3: Team Performance Analysis
+team_wins <- table(ipl_data$winner)
+cat("Number of matches won by each team:\n", team_wins, "\n\n")
+
+
+# Task 4: Venue Insights
+most_frequent_venue <- names(which.max(table(ipl_data$venue)))
+cat("Most frequently used venue for matches:", most_frequent_venue, "\n")
+
+# Task 5: Visualization
+team_wins_df <- data.frame(Team = names(team_wins), Wins = as.numeric(team_wins))
+
+# Creating a bar plot
+plot(ggplot(team_wins_df, aes(x = Team, y = Wins, fill = Team)) +
+       geom_bar(stat = "identity") +
+       labs(title = "Number of Matches Won by Each Team", x = "Team", y = "Number of Wins") +
+       theme_minimal()+theme(axis.text.x=element_text(angle = 45, vjust=1, hjust=1))
+)
