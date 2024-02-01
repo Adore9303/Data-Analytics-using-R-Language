@@ -1,0 +1,76 @@
+library(dplyr)
+
+student_data <- data.frame(
+  name = character(0),
+  math_score = numeric(0),
+  science_score = numeric(0),
+  history_score = numeric(0),
+  attendance = numeric(0)
+)
+
+print(student_data)
+
+add_student <- function(name, math_score, science_score, history_score, attendance){
+  new_student <- data.frame(
+    name = name,
+    math_score = math_score,
+    science_score = science_score,
+    history_score = history_score,
+    attendance = attendance
+  )
+  
+  student_data <<- bind_rows(student_data, new_student)
+  cat("Student Information added.\n")
+}
+
+calculate_average_scores <- function(){
+  avg_scores <- student_data %>% 
+    mutate(average_score = (math_score + science_score + history_score) / 3) %>% 
+    select(name, average_score)
+  print(avg_scores)
+  return(avg_scores)
+}
+
+identify_low_attendance <-  function(threshold){
+  low_attendance <- student_data %>% 
+    filter(attendance < threshold) %>% 
+    select(name, attendance)
+  return(low_attendance)
+}
+
+generate_report <- function(){
+  avg_scores <- calculate_average_scores()
+  print(avg_scores)
+  low_attendance <- identify_low_attendance(75)
+  print(low_attendance)
+  
+  report <- merge(avg_scores, low_attendance, by='name', all=TRUE)
+  
+  report$attendance[is.na(report$attendance)] <- 100
+  
+  cat("Attendance Shortage:\n")
+  print(low_attendance)
+  cat("Performance Report:\n")
+  print(report)
+}
+
+while(TRUE){
+  cat("\n1.Add Student\n2.Generate report\n3.Exit")
+  choice <- as.integer(readline("Enter your choice:"))
+  
+  if (choice == 1){
+    name <- readline("Enter student name:")
+    math_score <- as.numeric(readline("Enter math score:"))
+    science_score <- as.numeric(readline("Enter science score:"))
+    history_score <- as.numeric(readline("Enter history score:"))
+    attendance <- as.numeric(readline("Enter attendance percentage:"))
+    add_student(name, math_score, science_score, history_score, attendance)
+  } else if(choice == 2){
+    generate_report()
+  } else if(choice == 3){
+    cat("Exiting the program.\n")
+    break
+  } else{
+    cat("Invalid choice. Please try again.\n")
+  }
+}
